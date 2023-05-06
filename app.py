@@ -4,6 +4,7 @@ from datetime import datetime
 import pickle
 import numpy as np
 import mysql.connector
+import datetime
 
 mydb = mysql.connector.connect(
   host="localhost",
@@ -55,6 +56,7 @@ def process_form():
     pH = request.form['pH']
     Rainfall = request.form['Rainfall']
     Ex_crop = request.form['ex_crop']
+    DateCreated = datetime.datetime.now()
 
 
     with open('models/randomforest.pkl', 'rb') as f:
@@ -63,10 +65,10 @@ def process_form():
         prediction = model.predict(data)
         result = prediction[0].capitalize()
         print(data, result)
-        info = (email, N, P, K, Temp, Humidity, Ex_crop, result)
+        info = (email, N, P, K, Temp, Humidity, Ex_crop, result, DateCreated)
         print(info)
         mycursor = mydb.cursor()
-        sql_query = "insert into cropdata (email_id, N, P, K, Temp, Humidity, Existing_Crop, Recommended_Crop) values(%s, %s, %s, %s, %s, %s, %s, %s)"
+        sql_query = "insert into cropdata (email_id, N, P, K, Temp, Humidity, Existing_Crop, Recommended_Crop, DateCreated) values(%s, %s, %s, %s, %s, %s, %s, %s, %s)"
         
         mycursor.execute(sql_query, info)
 
